@@ -16,6 +16,8 @@ export class PeerService {
     constructor(private http: HttpClient) { }
 
     getTurnServeConfig(): Observable<any> {
+        console.log('getTurnServeConfig called');
+        
         return this.http.put('https://global.xirsys.net/_turn/MyFirstApp', null,
             {
                 headers: new HttpHeaders(
@@ -29,17 +31,19 @@ export class PeerService {
         return new Promise<string>((resolve) => {
             //window.alert(JSON.stringify(stream));
             this.getTurnServeConfig().subscribe(data => {
+                console.log('data -> ', data)
                 //window.alert(JSON.stringify(data));
                 //window.alert(JSON.stringify(data.v));
                 this.initPeer(data.v);
                 this.peer.on('open', (uerPeerId: string) => {
-                    window.alert("uerPeerId" + uerPeerId);
                     console.log('uerPeerId', uerPeerId);
 
                     this.myPeerId = uerPeerId
                     this.handleInComingCall(stream);
                     resolve(uerPeerId);
                 })
+            },(error) => {
+                console.log('error -> ', error)
             })
         });
     }
@@ -69,9 +73,11 @@ export class PeerService {
 
     private initPeer(config: any): void {
         this.peer = new Peer(this.myPeerId, {
-            host: '/',
-            port: '3001' // config: config
+            host: '103.127.146.190',
+            port: '3001', // config: config
+            secure: true
         });
+        console.log('inint peer -> ', this.peer)
     }
 
 }

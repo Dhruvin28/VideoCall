@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { json } from 'express';
 import { BehaviorSubject } from 'rxjs';
@@ -21,6 +21,7 @@ export class CallComponent implements OnInit, AfterViewInit {
     constructor(
         private activatedRoute: ActivatedRoute,
         private socketService: SocketService,
+        private cdr: ChangeDetectorRef,
         private peerService: PeerService, ) {
         this.activatedRoute.queryParams.subscribe(param => {
             if (param && param.isAdmin) {
@@ -32,23 +33,30 @@ export class CallComponent implements OnInit, AfterViewInit {
             }
         })
     }
-
+    onClick() {
+        console.log('Dynamic click');
+        
+    }
     ngAfterViewInit(): void {
         //window.alert("2");
         this.listenNewUser();
         this.listenLeavedUser();
         this.detectScreenWith();
+        document.getElementById('temp').click();
+        document.getElementById('temp').click();
+        this.cdr.detectChanges();
     }
 
     ngOnInit(): void {
+        console.log('Hi there!!!');
+        
         //window.alert("1");
         //window.alert('2 ' + this.isAdmin)
         //window.alert(this.isAdmin.toString() == 'true')
         if (this.isAdmin.toString() == 'true') {
             // if (true) {
-            //window.alert('Hi')
+            window.alert('Hi')
             Utils.getMediaStream({ video: true, audio: true }).then(stream => {
-                window.alert(JSON.stringify(stream));
                 this.localStream = stream;
                 this.openPeer();
             })
@@ -92,8 +100,6 @@ export class CallComponent implements OnInit, AfterViewInit {
 
     private listenNewUserJoinRoom(): void {
         //window.alert("7");
-        window.alert(JSON.stringify(this.socketService.joinedId));
-        window.alert(JSON.stringify(this.socketService.joinedId.value));
         if (this.socketService.joinedId == null || this.socketService.joinedId.value == null) {
             //const newJoinedId = this.generateNewJoinedId(); // Replace this with your own logic to generate a new value if needed.
             //this.socketService.joinedId = newJoinedId;
@@ -110,13 +116,13 @@ export class CallComponent implements OnInit, AfterViewInit {
 
     // Call this function when you want to set a new joinedId in your class
     setNewJoinedId() {
+        console.log('this.socketService.joinedId->', this.socketService.joinedId);
+        
         if (this.socketService.joinedId === null) {
             // Step 2: Call the generateNewJoinedId function and subscribe to its value changes
             const generatedIdSubject = this.generateNewJoinedId();
             //generatedIdSubject.subscribe((newId) => {
-            window.alert(JSON.stringify(generatedIdSubject));
             this.socketService.joinedId = generatedIdSubject;
-            window.alert("qqq" + JSON.stringify(this.socketService.joinedId));
             //console.log("New joined ID set:", this.socketService.joinedId);
             //});
         } else {
@@ -147,6 +153,8 @@ export class CallComponent implements OnInit, AfterViewInit {
             if (user) {
                 if (this.joinedUsers.findIndex(u => u.peerId === user.peerId) < 0) {
                     this.joinedUsers.push(user);
+                    console.log('join user', this.joinedUsers);
+                    
                 }
             }
             console.log(this.joinedUsers)
@@ -154,9 +162,16 @@ export class CallComponent implements OnInit, AfterViewInit {
     }
 
     private openPeer(): void {
+        
+        
+        
         //window.alert("9");
         //window.alert(JSON.stringify(this.localStream));
         this.peerService.openPeer(this.localStream).then((myPeerId) => {
+            document.getElementById('temp').click();
+            console.log('clicked1');
+            console.log('this.roomId -> ', this.roomId)
+            console.log('this.myPeerId -> ', myPeerId)
             this.joinRoom(this.roomId, myPeerId);
         })
     }
@@ -164,12 +179,16 @@ export class CallComponent implements OnInit, AfterViewInit {
     private makeCall(anotherPeerId: string): void {
         //window.alert("10");
         //window.alert(anotherPeerId);
+        console.log('112233');
+        
         this.peerService.call(anotherPeerId, this.localStream);
     }
 
     private joinRoom(roomId: string, userPeerId: string): void {
         //window.alert("11");
         this.socketService.joinRoom(roomId, userPeerId);
+        document.getElementById('temp').click();
+        console.log('clicked2');
     }
 
 }

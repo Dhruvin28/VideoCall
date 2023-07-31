@@ -33,19 +33,31 @@ const express = require('express');
 const app = express();
 
 // Read SSL/TLS certificates
-const privateKey = fs.readFileSync('path/to/private.key.pem', 'utf8');
-const certificate = fs.readFileSync('path/to/certificate.crt.pem', 'utf8');
+// const privateKey = fs.readFileSync('path/to/private.key.pem', 'utf8');
+// const certificate = fs.readFileSync('path/to/certificate.crt.pem', 'utf8');
+const privateKey = fs.readFileSync('C:/Users/dhruv/Documents/Stream/stream/CngSSLs/CngSSLs/PEM File Extension change/private.key.pem', 'utf8');
+const certificate = fs.readFileSync('C:/Users/dhruv/Documents/Stream/stream/CngSSLs/CngSSLs/PEM File Extension change/certificate.crt.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
+
+  const { PeerServer } = require('peer');
+  const peerServer = PeerServer({ port: 3001, 
+                                path: '/' ,
+                                ssl: {
+                                    key: privateKey,
+                                    cert: certificate
+                                  },
+                                  host: '103.127.146.190'
+                            
+                            });
 const server = https.createServer(credentials, app);
 const io = require('socket.io')(server
-    //, {
-    //cors: {
-    //    origin: "*",
-    //    methods: ["GET", "POST"]
-    //}
-    //, path: "/socket"
-});
+    , {
+    cors: {
+       origin: '*',
+    }
+}
+);
 
 io.on('connection', socket => {
     //console.log("socket" + JSON.stringify(socket));

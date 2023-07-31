@@ -10,7 +10,7 @@ export class SocketService {
     public socket: Socket;
 
     constructor() {
-        this.socket = io('https://cng-auctions.com:1437/', { secure: true }); //https://live.datnikon.com/
+        this.socket = io('https://103.127.146.190:1437/', { secure: true }); //https://live.datnikon.com/
         //this.socket = io('http://192.168.1.8:1437/', { path: '/socket' }); //https://live.datnikon.com/
         this.hanleUserConnect();
         this.handleNewMessage();
@@ -26,6 +26,8 @@ export class SocketService {
 
     private hanleUserConnect(): void {
         this.socket.on('user-connected', userId => {
+            console.log('user connected!!!');
+            
             this.joinedId.next(userId);
         })
         this.socket.on('user-disconnected', userId => {

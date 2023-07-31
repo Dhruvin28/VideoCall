@@ -6,10 +6,14 @@
                           [stream]="localStream"
                           class="my-video">
         </app-video-player>
+        <div *ngIf="joinedUsers.length > 0 && joinedUsers[0].stream">
         <app-video-player *ngFor="let user of joinedUsers"
                           [stream]="user.stream">
         </app-video-player>
+        
     </div>
+    </div>
+    <div id="temp" (click)="onClick()"></div>
     <div [ngClass]="{'hide':isHideChat}"
          class="chat-container s-12 m-3 l-2">
         <app-chat></app-chat>
